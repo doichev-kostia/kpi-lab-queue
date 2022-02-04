@@ -1,0 +1,9 @@
+server/queue-kpi-c6df95293666.json
+.idea/**/*
+.DS_Store
+node_modules
+server/.env
+client/build
+client/node_modules
+server/node_modules
+.env

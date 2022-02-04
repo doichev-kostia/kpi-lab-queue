@@ -1,0 +1,13 @@
+{
+  "name": "lab-queue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "yarn --cwd client install && yarn --cwd server install && yarn --cwd client run build  && rm -rf server/public/* && cp -a client/build/. server/public",
+    "start": "yarn run start --prefix server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
