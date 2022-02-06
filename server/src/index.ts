@@ -24,6 +24,7 @@ app.use(express.static(path.join(dirname, "public")));
 
 app.use(routes.USERS, routers.user);
 app.use(routes.QUEUE, routers.queue);
+app.use(routes.CONFIG, routers.config);
 
 app.get("/*", (_, res) => {
   res.sendFile(path.join(dirname, "public", "index.html"));
