@@ -4,9 +4,12 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import {Request, Response} from "express";
 import {UserController} from "./types";
+import _ from "lodash"
+import {config} from "dotenv";
+
+config();
 
 const SECRET = process.env.SECRET || 'secret';
-
 
 
 export class User implements UserController {
@@ -27,7 +30,7 @@ export class User implements UserController {
             const isUserExists = await models.User.findOne({email}).exec();
             if (isUserExists) {
                 return res.status(400).send({
-                    message: "The user with such login already exists"
+                    message: "The user with such email already exists"
                 }).end();
             }
 
@@ -40,7 +43,8 @@ export class User implements UserController {
             }
             const entity = new models.User(user);
 
-            const result = await entity.save()
+            const document = await entity.save();
+            const result = _.omit(document.toObject(), ["createdAt", "updatedAt", "password", "__v"])
             res.status(200).send(result).end();
         } catch (error) {
             res.status(500).send({
@@ -70,9 +74,7 @@ export class User implements UserController {
             }
 
             const payload = {
-                id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName
+                id: user.id
             };
 
             const token = jwt.sign(payload, SECRET, {
@@ -82,6 +84,7 @@ export class User implements UserController {
             res.send({
                 token: `Bearer ${token}`
             }).end();
+
         } catch (error) {
             res.status(500).send({
                 message: `An error has occurred while logging in.`
@@ -92,8 +95,7 @@ export class User implements UserController {
 
     public async retrieve(req: Request, res: Response): Promise<void> {
         // @ts-ignore
-        const user = req.user.toObject();
-        delete user.password;
+        const user = _.omit(req.user.toObject(), ['password']);
         res.send(user).end();
     }
 
@@ -102,6 +104,11 @@ export class User implements UserController {
             // @ts-ignore
             const {id} = req.user;
             const user = await models.User.findById(id).exec();
+            if (!user) {
+                return res.status(404).send({
+                    message: `The user with id ${id} doesn't exist`
+                });
+            }
             const {password, newPassword} = req.body;
             if (!user?.password) {
                 console.error("User password is not defined");
@@ -118,12 +125,12 @@ export class User implements UserController {
             }
 
             const hash = await User.encrypt(newPassword, 10);
-            await models.User.findByIdAndUpdate(id, {
+            const document = await models.User.findByIdAndUpdate(id, {
                 password: hash
-            }).exec();
-            res.status(200).send({
-                message: "Success"
-            }).end();
+            }, {new: true}).exec();
+            // @ts-ignore
+            const result = _.omit(document.toObject(), ["createdAt", "updatedAt", "password", "__v"])
+            res.status(200).send(result).end();
         } catch (error) {
             res.status(500).send({
                 message: `An error has occurred while logging in.`
