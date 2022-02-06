@@ -24,7 +24,8 @@ export class User implements UserController {
                 firstName,
                 lastName,
                 email,
-                password
+                password,
+                role
             } = req.body;
 
             const isUserExists = await models.User.findOne({email}).exec();
@@ -39,7 +40,8 @@ export class User implements UserController {
                 firstName,
                 lastName,
                 email,
-                password: hash
+                password: hash,
+                role,
             }
             const entity = new models.User(user);
 

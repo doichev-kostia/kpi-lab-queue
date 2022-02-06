@@ -1,5 +1,5 @@
 import {Schema, model} from "mongoose"
-import {User} from "./types";
+import {User, Roles} from "./types";
 
 const User = new Schema<User>({
     firstName: {
@@ -18,9 +18,9 @@ const User = new Schema<User>({
         type: String,
         required: true
     },
-    isAdmin: {
-        type: Boolean,
-        default: false
+    role: {
+        type: String,
+        enum: [Roles.USER, Roles.ADMIN, Roles.SUPER_ADMIN],
     },
 }, {
     strict: false,
