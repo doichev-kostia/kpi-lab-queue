@@ -19,6 +19,7 @@ router.get(
     passport.authenticate("jwt", {session: false}),
     retrieve
 );
+
 router.put(
     "/password",
     passport.authenticate("jwt", {session: false}),
