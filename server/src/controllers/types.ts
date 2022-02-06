@@ -15,6 +15,13 @@ export interface QueueController {
     clear: (req: Request, res: Response) => Promise<Response | void>;
 }
 
+export interface ConfigController {
+    create: (req: Request, res: Response) => Promise<Response | void>;
+    retrieve: (req: Request, res: Response) => Promise<Response | void>;
+    update: (req: Request, res: Response) => Promise<Response | void>;
+    delete: (req: Request, res: Response) => Promise<Response | void>;
+}
+
 export interface Row {
     number: number;
     fullName: string;
